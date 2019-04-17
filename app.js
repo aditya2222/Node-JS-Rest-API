@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose')
 
 const app = express();
 
@@ -18,4 +19,11 @@ app.use((req, res, next) => {
 app.use('/feed', feedRoutes);
 
 
-app.listen(8000);
+mongoose.connect('mongodb+srv://admin:tiktik123@cluster0-5t9yf.mongodb.net/messages?retryWrites=true', { useNewUrlParser: true })
+    .then((response) => {
+        app.listen(8000);
+    })
+    .catch((error) => {
+        console.log(error)
+    })
+
