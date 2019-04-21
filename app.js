@@ -48,8 +48,9 @@ app.use((error, req, res, next) => {
     console.log(error)
     const statusCode = error.statusCode
     const message = error.message
-    return res.status(status).json({
-        message: message
+    return res.status(statusCode).json({
+        message: message,
+
     })
 })
 
