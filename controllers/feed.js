@@ -1,4 +1,4 @@
-const {validationResult} = require('express-validator/check')
+const { validationResult } = require('express-validator/check')
 const fs = require('fs');
 const path = require('path')
 const Post = require('../models/post')
@@ -126,7 +126,7 @@ exports.updatePost = (req, res, next) => {
             return post.save()
         })
         .then((result) => {
-            res.status(200).json({message: 'Post Updated!', post: result})
+            res.status(200).json({ message: 'Post Updated!', post: result })
         })
         .catch((error) => {
             if (!error.statusCode) {
