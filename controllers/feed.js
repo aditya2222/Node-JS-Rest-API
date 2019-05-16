@@ -4,10 +4,20 @@ const path = require('path')
 const Post = require('../models/post')
 
 exports.getPosts = (req, res, next) => {
-    Post.find()
+    const currentPage = req.query.page || 1;
+    const perPage = 2;
+    let tottalItems;
+    Post.find().countDocuments()
+        .then((count) => {
+            tottalItems = count
+            return Post.find()
+                .skip((currentPage - 1) * perPage)
+                .limit(perPage)
+        })
         .then((posts) => {
             res.status(200).json({
-                posts: posts
+                posts: posts,
+                totalItems: tottalItems
             })
         })
         .catch((error) => {
@@ -16,7 +26,6 @@ exports.getPosts = (req, res, next) => {
             }
             next(error)
         })
-
 };
 
 
