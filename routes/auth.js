@@ -11,13 +11,16 @@ router.put('/signup', [
         .isEmail()
         .withMessage('Please Enter A Valid Email')
         .custom((value, { req }) => {
+            console.log('email is ' + value)
             return User.findOne({ email: value })
                 .then((userDoc) => {
-                    return Promise.reject('Email address already exists')
+                    if (userDoc) {
+                        return Promise.reject('Email address already exists')
+                    }
                 })
         }).normalizeEmail(),
     body('password').trim().isLength({ min: 5 }),
-    body('name').trim().isLength({ min: 5 }).isEmpty()
+    body('name').trim().isLength({ min: 5 }).not().isEmpty()
 ], authController.signup)
 
 
