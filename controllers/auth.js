@@ -58,7 +58,7 @@ exports.login = (req,res,next) => {
 
 			if(!isEqual){
 
-				const error = new Error('Wronf=g password')
+				const error = new Error('Wrong password')
 				error.statuscode = 401;
 				throw error
 			}
