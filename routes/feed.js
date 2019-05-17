@@ -6,16 +6,16 @@ const feed = require('../controllers/feed');
 
 router.get('/posts', isAuth, feed.getPosts);
 
-router.post('/createPost', [
+router.post('/createPost', isAuth, [
     body('title').trim().isLength({ min: 5 }),
     body('content').trim().isLength({ min: 5 })
 ], feed.postPost);
 
 
-router.get('/post/:postId', feed.getPost);
+router.get('/post/:postId', isAuth, feed.getPost);
 
 
-router.put('/post/:postId', [
+router.put('/post/:postId',isAuth, [
     body('title')
         .trim()
         .isLength({ min: 5 }),
@@ -24,6 +24,6 @@ router.put('/post/:postId', [
         .isLength({ min: 5 })
 ], feed.updatePost);
 
-router.delete('/post/:postId', feed.deletePost)
+router.delete('/post/:postId', isAuth, feed.deletePost)
 
 module.exports = router
