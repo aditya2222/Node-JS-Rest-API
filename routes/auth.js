@@ -25,6 +25,7 @@ router.put('/signup', [
 
 
 
+router.post('/login')
 
 
 module.exports = router
