@@ -58,18 +58,18 @@ exports.postPost = (req, res, next) => {
 		.then((response) => {
 			return User.findById(req.userId)
 		})
-		.then((user)=>{
-			
-			user.posts.push(post) 
+		.then((user) => {
+
+			user.posts.push(post)
 			creator = user
 			return user.save()
 		})
-		.then((response)=>{
-	
+		.then((response) => {
+
 			res.status(201).json({
 				message: 'Post Created successfully',
 				post: post,
-				creator: {_id: creator._id, name:creator.name}
+				creator: { _id: creator._id, name: creator.name }
 			})
 		})
 		.catch((error) => {
@@ -138,6 +138,11 @@ exports.updatePost = (req, res, next) => {
 				error.statusCode = 404;
 				throw error
 			}
+			if (post.creator.toString() !== req.userId) {
+				const error = new Error('Not Authorized!')
+				error.statusCode = 403;
+				throw error
+			}
 			if (imageUrl !== post.imageUrl) {
 				clearImage(post.imageUrl)
 			}
@@ -167,6 +172,11 @@ exports.deletePost = (req, res, next) => {
 			if (!post) {
 				const error = new Error('Could not find post.')
 				error.statusCode = 404
+				throw error
+			}
+			if (post.creator.toString() !== req.userId) {
+				const error = new Error('Not Authorized')
+				error.statusCode = 403;
 				throw error
 			}
 			// check logged in user
