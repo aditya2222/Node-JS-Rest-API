@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path')
 const Post = require('../models/post')
 const User = require('../models/User')
+const mongoose = require('mongoose')
 
 exports.getPosts = (req, res, next) => {
 	const currentPage = req.query.page || 1;
@@ -198,6 +199,23 @@ exports.deletePost = (req, res, next) => {
 				error.statusCode = 500
 			}
 			next(error)
+		})
+}
+
+exports.getStatus = (req, res, next) => {
+	User.findById(req.userId)
+		.then((user) => {
+			if (!user) {
+				const error = new Error('User Does not exist')
+				throw error
+			}
+			res.status(200).json({ status: user.status })
+		})
+		.catch((error) => {
+			if (!error.statusCode) {
+				error.statusCode = 500
+			}
+			throw error
 		})
 }
 
