@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path')
 const Post = require('../models/post')
 const User = require('../models/User')
+const io = require('../scoket')
 
 exports.getPosts = async (req, res, next) => {
 	const currentPage = req.query.page || 1;
@@ -59,6 +60,10 @@ exports.postPost = async (req, res, next) => {
 		user.posts.push(post)
 		creator = user
 		const anotherResponse = await user.save()
+		io.getIO().emit('posts', {
+			action: 'create',
+			post: post
+		})
 		res.status(201).json({
 			message: 'Post Created successfully',
 			post: post,
@@ -165,7 +170,7 @@ exports.updatePost = async (req, res, next) => {
 exports.deletePost = async (req, res, next) => {
 	try {
 		const postId = req.params.postId
-		const post = Post.findById(postId)
+		const post = await Post.findById(postId)
 		if (!post) {
 			const error = new Error('Could not find post.')
 			error.statusCode = 404
@@ -178,8 +183,8 @@ exports.deletePost = async (req, res, next) => {
 		}
 		// check logged in user
 		clearImage(post.imageUrl)
-		const result = Post.findByIdAndRemove(postId)
-		const user = User.findById(req.userId)
+		const result = await Post.findByIdAndRemove(postId)
+		const user = await User.findById(req.userId)
 		user.posts.pull(postId)
 		user.save();
 		res.status(200).json({ message: 'Deleted Post' })
