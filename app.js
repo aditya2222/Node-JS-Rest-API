@@ -62,7 +62,11 @@ app.use((error, req, res, next) => {
 
 mongoose.connect('mongodb+srv://admin:tiktik123@cluster0-5t9yf.mongodb.net/messages?retryWrites=true', { useNewUrlParser: true })
     .then((response) => {
-        app.listen(8000);
+        const server = app.listen(8000);
+        const io = require('socket.io')(server)
+        io.on('connection', socket => {
+            console.log('Client Connected')
+        })
     })
     .catch((error) => {
         console.log(error)

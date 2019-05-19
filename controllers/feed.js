@@ -3,7 +3,6 @@ const fs = require('fs');
 const path = require('path')
 const Post = require('../models/post')
 const User = require('../models/User')
-const mongoose = require('mongoose')
 
 exports.getPosts = async (req, res, next) => {
 	const currentPage = req.query.page || 1;
