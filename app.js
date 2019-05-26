@@ -30,7 +30,7 @@ const fileFilter = (req, file, cb) => {
 //application/json
 app.use(bodyParser.json());
 
-app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single('image'))
+app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'))
 
 app.use('/images', express.static(path.join(__dirname, 'images')))
 
@@ -43,7 +43,9 @@ app.use((req, res, next) => {
 
 app.use('/graphql', graphqlhttp({
     schema: graphqlSchema,
-    rootValue: graphqlresolver
+    rootValue: graphqlresolver,
+    graphiql: true
+
 }))
 
 app.use((error, req, res, next) => {
@@ -59,7 +61,7 @@ app.use((error, req, res, next) => {
 })
 
 
-mongoose.connect('mongodb+srv://admin:tiktik123@cluster0-5t9yf.mongodb.net/messages?retryWrites=true', {useNewUrlParser: true})
+mongoose.connect('mongodb+srv://admin:tiktik123@cluster0-5t9yf.mongodb.net/messages?retryWrites=true', { useNewUrlParser: true })
     .then((response) => {
         const server = app.listen(8000);
     })
