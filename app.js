@@ -3,12 +3,11 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose')
 const path = require('path')
 const multer = require('multer')
+const graphqlhttp = require('express-graphql');
+const graphqlSchema = require('./graphql/schema');
+const graphqlresolver = require('./graphql/resolvers');
 
 const app = express();
-
-const feedRoutes = require('./routes/feed');
-const authRoutes = require('./routes/auth')
-
 
 const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -22,8 +21,7 @@ const fileStorage = multer.diskStorage({
 const fileFilter = (req, file, cb) => {
     if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
         cb(null, true)
-    }
-    else {
+    } else {
         cb(null, false)
     }
 }
@@ -32,7 +30,7 @@ const fileFilter = (req, file, cb) => {
 //application/json
 app.use(bodyParser.json());
 
-app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'))
+app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single('image'))
 
 app.use('/images', express.static(path.join(__dirname, 'images')))
 
@@ -43,8 +41,10 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/feed', feedRoutes);
-app.use('/auth', authRoutes);
+app.use('/graphql', graphqlhttp({
+    schema: graphqlSchema,
+    rootValue: graphqlresolver
+}))
 
 app.use((error, req, res, next) => {
     console.log(error)
@@ -59,14 +59,9 @@ app.use((error, req, res, next) => {
 })
 
 
-
-mongoose.connect('mongodb+srv://admin:tiktik123@cluster0-5t9yf.mongodb.net/messages?retryWrites=true', { useNewUrlParser: true })
+mongoose.connect('mongodb+srv://admin:tiktik123@cluster0-5t9yf.mongodb.net/messages?retryWrites=true', {useNewUrlParser: true})
     .then((response) => {
         const server = app.listen(8000);
-        const io = require('./scoket').init(server)
-        io.on('connection', socket => {
-            console.log('Client Connected')
-        })
     })
     .catch((error) => {
         console.log(error)
