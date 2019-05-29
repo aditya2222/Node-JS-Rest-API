@@ -30,7 +30,7 @@ const fileFilter = (req, file, cb) => {
 //application/json
 app.use(bodyParser.json());
 
-app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'))
+app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single('image'))
 
 app.use('/images', express.static(path.join(__dirname, 'images')))
 
@@ -38,6 +38,9 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', '*');
     res.setHeader('Access-Control-Allow-Headers', '*');
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200)
+    }
     next();
 });
 
@@ -52,10 +55,10 @@ app.use('/graphql', graphqlhttp({
         const data = error.originalError.data
         const message = error.message || 'An error occured'
         const code = error.originalError.code || 500
-        return { message: message, status: code, data: data }
+        return {message: message, status: code, data: data}
     }
 
-}))
+}));
 
 app.use((error, req, res, next) => {
     console.log(error)
@@ -70,7 +73,7 @@ app.use((error, req, res, next) => {
 })
 
 
-mongoose.connect('mongodb+srv://admin:tiktik123@cluster0-5t9yf.mongodb.net/messages?retryWrites=true', { useNewUrlParser: true })
+mongoose.connect('mongodb+srv://admin:tiktik123@cluster0-5t9yf.mongodb.net/messages?retryWrites=true', {useNewUrlParser: true})
     .then((response) => {
         const server = app.listen(8000);
     })
