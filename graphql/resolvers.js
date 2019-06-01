@@ -60,7 +60,11 @@ module.exports = {
 	},
 
 	createPost: async function(args, req) {
-	
+		if(!req.isAuth)	{	
+			const error = new Error('Not Authenticated')
+			error.code = 401
+			throw error
+		}
 		const errors = []
 		if(validator.isEmpty(args.postInput.title) || !validator.isLength(args.postInput.title, {min:5})){	
 			errors.push({message: "Title is invalid."})	
@@ -78,14 +82,22 @@ module.exports = {
 			throw error
 		}
 
+		const user = await User.findById(req.userId)
+		if(!user){
+		
+			const error = new Error('Invalid User')
+			error.code = 401
+			throw error
+		}
+
 		const post = new Post({	
 			title: args.postInput.title,
 			content: args.postInput.content,
-			imageUrl: args.postInput.imageUrl
+			imageUrl: args.postInput.imageUrl,
+			creator: user
 		})
-
 		const createdPost = await post.save()
-		// Add post to user's posts array
+		user.posts.push(createdPost)
 		return {...createdPost._doc, _id: createdPost._id.toString(), createdAt: createdPost.createdAt.toISOString(), updatedAt: createdPost.updatedAt.toISOString()}
 
 	
