@@ -105,8 +105,17 @@ module.exports = {
 	},
 
 	getposts: async function(args, req){
+		if(!req.isAuth){
+			const error = new Error("User not authenticated!")
+			error.code = 401
+			throw error	
+		}
+		if(!args.page){
+			args.page = 1;
+		}
+		const perPage = 2
 		const totalPosts = await Post.find().countDocuments()
-		const posts = await Post.find().sort({createdAt:-1}).populate('creator')
+		const posts = await Post.find().sort({createdAt:-1}).populate('creator').skip((2*args.page)-2).limit(perPage)
 		return {posts: posts.map(el=>{ 
 		
 			return{...el._doc,_id:el._id.toString(), updatedAt:el.updatedAt.toISOString(), createdAt: el.createdAt.toISOString()}
