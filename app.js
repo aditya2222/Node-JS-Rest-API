@@ -27,12 +27,10 @@ const fileFilter = (req, file, cb) => {
         cb(null, false)
     }
 }
-
-
 //application/json
 app.use(bodyParser.json());
 
-app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single('image'))
+app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'))
 
 app.use('/images', express.static(path.join(__dirname, 'images')))
 
@@ -49,21 +47,21 @@ app.use((req, res, next) => {
 
 app.use(auth)
 
-app.put('/post-image', (req,res,next)=>{
+app.put('/post-image', (req, res, next) => {
 
-	if(!req.isAuth){
-	
-		throw new Error('Not Authenticated')
-	}
-	if(!req.file){
-	
-		return res.status(200).json({message:'No File Provided'})
-	}
+    if (!req.isAuth) {
 
-	if(req.body.oldPath){	
-		clearImage(req.body.oldPath)
-	}
-	return res.status(201).json({message:'File stored', filePath: req.file.path})
+        throw new Error('Not Authenticated')
+    }
+    if (!req.file) {
+
+        return res.status(200).json({ message: 'No File Provided' })
+    }
+
+    if (req.body.oldPath) {
+        clearImage(req.body.oldPath)
+    }
+    return res.status(201).json({ message: 'File stored', filePath: req.file.path })
 })
 
 
@@ -78,7 +76,7 @@ app.use('/graphql', graphqlhttp({
         const data = error.originalError.data
         const message = error.message || 'An error occured'
         const code = error.originalError.code || 500
-        return {message: message, status: code, data: data}
+        return { message: message, status: code, data: data }
     }
 
 }));
@@ -87,8 +85,8 @@ app.use((error, req, res, next) => {
     console.log(error)
     const statusCode = error.statusCode
     const message = error.message
-    const data = error.data 
-	return res.status(statusCode).json({
+    const data = error.data
+    return res.status(statusCode).json({
         message: message,
         data: data
 
@@ -96,7 +94,7 @@ app.use((error, req, res, next) => {
 })
 
 
-mongoose.connect('mongodb+srv://admin:tiktik123@cluster0-5t9yf.mongodb.net/messages?retryWrites=true', {useNewUrlParser: true})
+mongoose.connect('mongodb+srv://admin:tiktik123@cluster0-5t9yf.mongodb.net/messages?retryWrites=true', { useNewUrlParser: true })
     .then((response) => {
         const server = app.listen(8000);
     })
@@ -108,10 +106,10 @@ mongoose.connect('mongodb+srv://admin:tiktik123@cluster0-5t9yf.mongodb.net/messa
 
 
 const clearImage = (filePath) => {
-	filePath = path.join(__dirname, '..', filePath);
-	fs.unlink(filePath, err => {
-		console.log(err)
-	})
+    filePath = path.join(__dirname, '..', filePath);
+    fs.unlink(filePath, err => {
+        console.log(err)
+    })
 
 };
 
