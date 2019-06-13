@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose')
 const path = require('path')
-const fs = require('fs')
+const { clearImage } = require('./util/file')
 const multer = require('multer')
 const graphqlhttp = require('express-graphql');
 const graphqlSchema = require('./graphql/schema');
@@ -105,11 +105,4 @@ mongoose.connect('mongodb+srv://admin:tiktik123@cluster0-5t9yf.mongodb.net/messa
 
 
 
-const clearImage = (filePath) => {
-    filePath = path.join(__dirname, '..', filePath);
-    fs.unlink(filePath, err => {
-        console.log(err)
-    })
-
-};
 

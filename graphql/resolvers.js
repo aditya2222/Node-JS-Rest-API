@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs')
 const validator = require('validator');
 const jwt = require('jsonwebtoken')
 const Post = require('../models/post')
+const { clearImage } = require('../util/file')
+
 
 module.exports = {
 	createUser: async function (args, req) {
@@ -162,9 +164,9 @@ module.exports = {
 			throw error
 		}
 
-		if(post.creator._id.toString() !== req.userId.toString()){
-		
-			const error = new Error('Not Authorized')	
+		if (post.creator._id.toString() !== req.userId.toString()) {
+
+			const error = new Error('Not Authorized')
 			error.code = 403
 			throw error
 
@@ -192,15 +194,44 @@ module.exports = {
 		post.title = args.postInput.title
 		post.content = args.postInput.content
 
-		if(args.postInput.imageUrl !== 'undefined'){
-		
+		if (args.postInput.imageUrl !== 'undefined') {
+
 			post.imageUrl = args.postInput.imageUrl
 		}
 
 		const updatedPost = await post.save()
 
-		return {...updatedPost._doc, _id: updatedPost._id.toString(), createdAt: updatedPost.createdAt.toISOString(), updatedAt: updatedPost.updatedAt.toISOString()}
+		return { ...updatedPost._doc, _id: updatedPost._id.toString(), createdAt: updatedPost.createdAt.toISOString(), updatedAt: updatedPost.updatedAt.toISOString() }
 
 
+	},
+	deletePost: async function (args, req) {
+		if (!req.isAuth) {
+			const error = new Error('Not Authenticated')
+			error.code = 401
+			throw error
+		}
+
+		const post = await Post.findById(args.id)
+
+		if (!post) {
+			const error = new Error('No Post Found')
+			error.code = 404
+			throw error
+		}
+
+		if (post.creator.toString() !== req.userId) {
+			const error = new Error('Not Auhorized')
+			error.code = 403
+			throw error
+		}
+
+		clearImage(post.imageUrl)
+
+		await Post.findByIdAndRemove(args.id)
+		const user = await User.findById(req.userId)
+		user.posts.pull(args.id)
+		await user.save()
+		return true
 	}
 };
