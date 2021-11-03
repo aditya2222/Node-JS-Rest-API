@@ -19,7 +19,7 @@
     "mongoose": "^5.5.2",
     "multer": "^1.4.1",
     "socket.io": "^2.2.0",
-    "validator": "^11.0.0"
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "@types/express": "^4.16.1",
